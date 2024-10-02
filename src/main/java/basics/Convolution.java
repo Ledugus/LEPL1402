@@ -10,6 +10,20 @@ public class Convolution {
      *         M[i][j] = sum_{k in 0..2, l in 0..2} input[i+k][j+l]*kernel[k][l]
      */
     public static int [][] convolution(int [][] input, int [][] kernel) {
-         return null;
+        int[][] res = new int[input.length-2][input[0].length-2];
+        // Pour chaque élément de res
+        for (int i=0; i<input.length-2; i ++) {
+            for (int j = 0; j<input[i].length-2; j++){
+                // faire la multiplication matricielle
+                int sum = 0;
+                for(int k=0; k<3; k++){
+                    for (int l=0; l<3; l++){
+                        sum += input[i+k][j+l]*kernel[k][l];
+                    }
+                }
+                res[i][j] = sum;
+            }
+        }
+        return res;
     }
 }
