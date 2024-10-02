@@ -14,7 +14,20 @@ public class Matrix {
      *  @return The matrix represented by the String
      */
     public static int[][] buildFrom(String s) {
-         return null;
+        String[] lines = s.split("\n");
+        int[][] matrix = new int[lines.length][]; // On peut garder la taille des lignes inconnue, et les initialiser plus tard
+        for (int i = 0; i < lines.length; i++) {
+            String[] line = lines[i].split(" ");
+            matrix[i] = new int[line.length]; // Initialiser les lignes avec la bonne taille
+            for (int j = 0; j < line.length; j++) {
+                matrix[i][j] = Integer.parseInt(line[j]);
+            }
+
+
+        }
+
+
+        return matrix;
     }
 
 
@@ -25,7 +38,13 @@ public class Matrix {
      * @return The sum of the element in matrix
      */
     public static int sum(int[][] matrix) {
-         return 0;
+        int sum = 0;
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                sum += matrix[i][j];
+            }
+        }
+        return sum;
     }
 
     /**
@@ -35,7 +54,13 @@ public class Matrix {
      * @return A new matrix that is the transpose of matrix
      */
     public static int[][] transpose(int[][] matrix) {
-         return null;
+        int[][] transposed = new int[matrix[0].length][matrix.length];
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                transposed[j][i] = matrix[i][j];
+            }
+        }
+        return transposed;
     }
 
     /**
@@ -46,6 +71,14 @@ public class Matrix {
      * @return The n x k matrix product of matrix1 and matrix2
      */
     public static int[][] product(int[][] matrix1, int[][] matrix2) {
-         return null;
+        int[][] product = new int[matrix1.length][matrix2[0].length];
+        for (int i = 0; i < matrix1.length; i++) {
+            for (int j = 0; j < matrix2[0].length; j++) {
+                for (int k = 0; k < matrix1[i].length; k++) {
+                    product[i][j] += matrix1[i][k] * matrix2[k][j];
+                }
+            }
+        }
+        return product;
     }
 }
