@@ -16,9 +16,20 @@ public class PatternMatching {
      * the string. Must be <code>-1</code> if the pattern is absent
      * from the string.
      **/
-    public static int find(String pattern,
-                           String value) {
-         return -1;
+
+    // DUPLICATION DE L'EXO indexOf de StringUtils.java
+    public static int find(String sub, String str){
+        for (int i =0; i < str.length()-sub.length() + 1; i++) {
+            boolean correct = true;
+            for (int j = 0; j < sub.length(); j++) {
+                if (sub.charAt(j) != str.charAt(i + j)) {
+                    correct = false;
+                    break;
+                }
+            }
+            if (correct) {return i;}
+        }
+        return -1;
     }
 
 }
