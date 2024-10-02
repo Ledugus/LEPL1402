@@ -37,18 +37,40 @@ public class QRcode {
         this.data = data;
     }
 
+
+    public static boolean equalArray(boolean[][] r, boolean [][] q){
+        return true;
+    }
+    public static boolean[][] rotate (boolean[][] input){
+        int n = input.length;
+        boolean [][] res = new boolean[n][n];
+
+        for (int i =0; i < n;i++){
+            for (int j = 0; j< n; j++) {
+                ; // res[i][j] = input[][] <ENTER RIGHT INDEXES> \\ TODO
+            }
+        }
+        return res;
+    }
     /**
      * Return true if the other matrix is identical up to
      * 0, 1, 2 or 3 number of rotations
      * @param o the other matrix to compare to
-     * @return
+     * @return boolean
      */
     @Override
     public boolean equals(Object o) {
-        // TODO
-         return false;
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        QRcode q = (QRcode) o;
+        boolean [][] r = q.data;
+
+        if ( equalArray(r, data)) {return true;}
+
+        for (int i = 0; i<3; i++){
+            r = rotate(r);
+            if ( equalArray(r, data)) {return true;}
+        }
+        return false;
     }
-
-
-
 }
