@@ -38,16 +38,21 @@ public class QRcode {
     }
 
 
-    public static boolean equalArray(boolean[][] r, boolean [][] q){
+    static boolean equalArray(boolean[][] array1, boolean[][] array2) { 
+        for (int i = 0; i<array1.length; i++){
+            if (!Arrays.equals(array1[i], array2[i])){
+                return false;
+            }
+        }
         return true;
-    }
+    } 
     public static boolean[][] rotate (boolean[][] input){
         int n = input.length;
         boolean [][] res = new boolean[n][n];
 
         for (int i =0; i < n;i++){
             for (int j = 0; j< n; j++) {
-                ; // res[i][j] = input[][] <ENTER RIGHT INDEXES> \\ TODO
+                res[i][j] = input[-j+n-1][i];
             }
         }
         return res;
