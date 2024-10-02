@@ -20,7 +20,26 @@ public class ASCIIDecoder {
      * You should NEVER return null or an array containing null.
      */
     public static String [] decode(int[] forbidden, String[][] sentences){
-         return null;
+        ArrayList<Integer> f = new ArrayList<>(); // Liste de taille dynamique
+        if (forbidden != null){
+            for (int fb : forbidden){
+                f.add(fb);
+            }
+        }
+
+        String[] decoded = new String[sentences.length];
+        int i = 0;
+        for (String[] s: sentences){
+            StringBuilder sb = new StringBuilder(); // Constructeur de String de taille dynamique
+            for (String w : s){
+                if (!f.contains(Integer.parseInt(w))){
+                    sb.appendCodePoint(Integer.parseInt(w));
+                }
+            }
+            decoded[i] = sb.toString(); // Concrétiser le constructeur dans un objet String final
+            i++;
+        }
+        return decoded;
     }
 
 }
