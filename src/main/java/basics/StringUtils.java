@@ -13,8 +13,28 @@ public class StringUtils {
      *          If there is no occurence of the delimiter, it should
      *          return an array of size 1 with the string at element 0
      */
-    public static String [] split(String str, char delimiter){
-         return null;
+    public static String [] split(String str, char delimiter) {
+        int cnt = 1;
+        for (int i = 0; i < str.length(); i++) {
+            if (str.charAt(i) == delimiter) cnt++;
+        }
+        String[] l = new String[cnt];
+
+        int current = 0;
+        int j = 0;
+        String subs = "";
+        while (current < str.length()) {
+            if (str.charAt(current) == delimiter) {
+                l[j] = subs;
+                subs = "";
+                j++;
+            } else {
+                subs += str.charAt(current);
+            }
+            current++;
+        }
+        l[j] = subs;
+        return l;
     }
 
 
@@ -27,8 +47,20 @@ public class StringUtils {
      *          the substring in str or -1 if sub does not appear
      *          in str
      */
+
+    // EXERCICES DUPLIQUE DANS PATTERNMATCHING.java
     public static int indexOf(String str, String sub){
-         return 0;
+        for (int i =0; i < str.length()-sub.length() + 1; i++) {
+            boolean correct = true;
+            for (int j = 0; j < sub.length(); j++) {
+                if (sub.charAt(j) != str.charAt(i + j)) {
+                    correct = false;
+                    break;
+                }
+            }
+            if (correct) {return i;}
+        }
+        return -1;
     }
 
 
@@ -40,7 +72,7 @@ public class StringUtils {
      *          character put to lower case.
      */
     public static String toLowerCase(String str){
-         return null;
+        return str.toLowerCase(); // Un peu de la triche mais c'est le meilleur moyen
     }
 
 
@@ -54,8 +86,13 @@ public class StringUtils {
      * @param str The string to check
      * @return true if str is a palyndrome, false otherwise
      */
-    public static boolean palindrome(String str){
-         return false;
+    public static boolean palindrome(String str) {
+        for (int i = 0; i < str.length() / 2; i++) {
+            if (str.charAt(i) != str.charAt(str.length() - 1 - i)) {
+                return false;
+            }
+        }
+        return true;
     }
 
 
