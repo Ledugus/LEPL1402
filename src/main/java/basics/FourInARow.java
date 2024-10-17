@@ -25,7 +25,8 @@ public class FourInARow {
     private static final char[] PLAYERS = {'X', 'O'};
 
      // add your own instance variables here
-    public char[][] board;
+    private char[][] board;
+    private int[] nInColumn;
     public FourInARow() {
          board = new char[][] {{'-', '-', '-', '-', '-', '-', '-'},
                  {'-', '-', '-', '-', '-', '-', '-'},
@@ -33,6 +34,7 @@ public class FourInARow {
                  {'-', '-', '-', '-', '-', '-', '-'},
                  {'-', '-', '-', '-', '-', '-', '-'},
                  {'-', '-', '-', '-', '-', '-', '-'}};
+         nInColumn = new int[COLUMNS];
     }
 
     /**
@@ -47,22 +49,18 @@ public class FourInARow {
         }
         System.out.println(" ");
 
-
     }
     public void play(int j, char player) {
-        if (j<0 || j>6){
-            throw new IllegalArgumentException();
+        if (j<0 || j>=COLUMNS){
+            throw new IllegalArgumentException("Illegal column index");
         }
-        if (board[0][j] != '-') {
-             throw new IllegalArgumentException();
+        if (board[ROWS-1][j] != '-') {
+             throw new IllegalArgumentException("Column is full");
         }
+        if (player != PLAYERS[0] && player != PLAYERS[1]) throw new IllegalArgumentException("Illegal player");
+        board[nInColumn[j]][j] = player;
+        nInColumn[j]++;
 
-        int height = 0;
-        while (height < 5 && board[height+1][j] == '-'){
-            height++;
-        }
-        board[height][j] = player;
-        print();
     }
 
 
@@ -73,7 +71,43 @@ public class FourInARow {
      * @throws IllegalArgumentException if the player is not X or O
      */
     public boolean hasWon(char player) {
-         // add your own code here
+        // STUDENT // add your own code here
+        // BEGIN STRIP
+        if (player != PLAYERS[0] && player != PLAYERS[1]) throw new IllegalArgumentException("Illegal player");
+        for (int i = 0; i < ROWS; i++) {
+            for (int j = 0; j < COLUMNS; j++) {
+                if (board[i][j] == player) {
+                    // check row
+                    if (j + 3 < COLUMNS &&
+                            board[i][j+1] == player &&
+                            board[i][j+2] == player &&
+                            board[i][j+3] == player)
+                        return true;
+
+                    // check column
+                    if (i + 3 < ROWS &&
+                            board[i+1][j] == player &&
+                            board[i+2][j] == player &&
+                            board[i+3][j] == player)
+                        return true;
+
+                    // check diagonal
+                    if (i + 3 < ROWS && j + 3 < COLUMNS &&
+                            board[i+1][j+1] == player &&
+                            board[i+2][j+2] == player &&
+                            board[i+3][j+3] == player)
+                        return true;
+
+                    // check reverse diagonal
+                    if (i - 3 >= 0 && j + 3 < COLUMNS &&
+                            board[i-1][j+1] == player &&
+                            board[i-2][j+2] == player &&
+                            board[i-3][j+3] == player)
+                        return true;
+                }
+            }
+        }
+        // END STRIP
         return false;
     }
 }
