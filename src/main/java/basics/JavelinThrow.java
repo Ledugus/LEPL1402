@@ -91,8 +91,14 @@ public class JavelinThrow {
      * @return the position of the javelin in the field
      */
     public static JavelinPosition findJavelin(char[][] field) {
-         // TODO
-         return new JavelinPosition(-1,-1);
+         for (int i=0; i< field.length; i++){
+             for (int j=0; j<field[i].length; j++){
+                 if (field[i][j] == '#'){
+                     return new JavelinPosition(i,j);
+                 }
+             }
+         }
+        return new JavelinPosition(-1,-1);
 
     }
 
