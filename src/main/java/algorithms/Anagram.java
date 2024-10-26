@@ -1,5 +1,5 @@
 package algorithms;
-
+import java.util.Arrays;
 public class Anagram {
 
     /**
@@ -17,13 +17,24 @@ public class Anagram {
      *
      * The time complexity of your method must be Theta(n),
      * where n is the size of the string.
-     * 
+     *
      * @param s The string of interest.
      * @return An array counting the number of occurrences of each
      * letter.
      **/
     public static int[] countAlphabet(String s) {
-         return null;
+        int[] count = new int[26];
+        char[] array = s.toCharArray();
+        for (char c: array) {
+            int ascii = (int) c;
+            if (ascii >= 65 && ascii <= 90) {
+                count[ascii-65] = count[ascii-65] + 1;
+            }
+            if (ascii >= 97 && ascii <= 122) {
+                count[ascii-97] = count[ascii-97] + 1;
+            }
+        }
+        return count;
     }
 
 
@@ -42,6 +53,9 @@ public class Anagram {
      **/
     public static boolean isAnagram(String s1,
                                     String s2) {
-         return false;
+        int[] count1 = countAlphabet(s1);
+        int[] count2 = countAlphabet(s2);
+
+        return java.util.Arrays.equals(count1, count2);
     }
 }
