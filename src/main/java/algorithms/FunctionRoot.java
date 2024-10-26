@@ -47,8 +47,22 @@ public class FunctionRoot {
      * @return the root of f
      */
     public static int findRoot(Function f) {
-        // TODO
-         return Integer.MAX_VALUE;
+        int min = f.getMinDomain();
+        int max = f.getMaxDomain();
+        while (true) {
+            int mid = Math.floorDiv(min+max, 2);
+            int value = f.evaluates(mid);
+
+            if (value == 0){
+                return mid;
+            }  else if (value > 0) {
+                max = mid-1;
+            } else {
+                min = mid+1;
+            }
+
+        }
+
     }
 
 }

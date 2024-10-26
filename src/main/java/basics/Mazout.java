@@ -188,6 +188,35 @@ public class Mazout {
      * @return The total amount of fuel.
      */
     public static int getTotalDemand(City city, House firstHouse, String[] path) {
-         return 0;  // TODO
+        House currentHouse = firstHouse;
+        if (currentHouse == null) {
+            throw new IllegalArgumentException("Invalid first house");
+
+        }
+        int totalDemand = firstHouse.capacity;
+
+        boolean[] isVisited = new boolean[city.getNumberOfHouses()];
+        isVisited[currentHouse.getIndex()] = true;
+        for (String d: path) {
+            if (d.equals("right")){
+                currentHouse = currentHouse.getNeighborRight();
+            } else if (d.equals("left")) {
+                currentHouse = currentHouse.getNeighborLeft();
+            } else if (d.equals("above")) {
+                currentHouse = currentHouse.getNeighborAbove();
+            } else if (d.equals("down")) {
+                currentHouse = currentHouse.getNeighborDown();
+            } else {
+                throw new IllegalArgumentException("unknown direction :" + d);
+            }
+            if (currentHouse ==null) {
+                throw new IllegalArgumentException("Invalid path");
+            }
+            if (!isVisited[currentHouse.getIndex()]) {
+                totalDemand += currentHouse.getCapacity();
+                isVisited[currentHouse.getIndex()] = true;
+            }
+        }
+        return totalDemand;
     }
 }
