@@ -23,10 +23,19 @@ public class Fibonacci {
         if (n < 0) {
             throw new IllegalArgumentException("n should be non-negative");
         }
-        if (n <= 1) {
-            return n;
+        if (n==0) {
+            return 0;
         }
-        return Math.addExact(fibonacci(n - 1) , fibonacci(n - 2)); // I use addExact to avoid silent overflow
+        long prev1 = 1;
+        long prev2 = 0;
+        long curr = 1;
+        for (int i = 0; i<n-1; i++) {
+            curr = prev1 + prev2;
+            prev2 = prev1;
+            prev1 = curr;
+
+        }
+        return curr;
      }
 
 }

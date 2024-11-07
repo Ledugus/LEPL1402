@@ -44,8 +44,7 @@ public class RecursiveStack<E>  implements Iterable<E> {
      * @return the new stack
      */
     public RecursiveStack<E> add(E e) {
-		 return null;
-        // TODO
+		 return new RecursiveStack<>(e, this);
     }
 
     /**
@@ -55,8 +54,10 @@ public class RecursiveStack<E>  implements Iterable<E> {
      * @return the element on top of the stack
      */
     public E top() {
-        // TODO
-         return null;
+        if (size() == 0) {
+            throw new EmptyStackException();
+        }
+        return e;
     }
 
     /**
@@ -66,8 +67,10 @@ public class RecursiveStack<E>  implements Iterable<E> {
      * @return the stack with the top element removed
      */
     public RecursiveStack<E> removeTop() {
-        // TODO
-         return null;
+        if (size() == 0) {
+            throw new EmptyStackException();
+        }
+        return next;
     }
 
     /**
@@ -77,7 +80,8 @@ public class RecursiveStack<E>  implements Iterable<E> {
      */
     public int size() {
         // TODO
-         return -1;
+        if (next == null) return 0;
+        return 1+ next.size();
     }
 
     /**
@@ -87,8 +91,12 @@ public class RecursiveStack<E>  implements Iterable<E> {
      * @return a reversed version of the current stack (the top element becomes the bottom one)
      */
     public RecursiveStack<E> reverse() {
-        // TODO
-         return null;
+        if (next == null) return this;
+        RecursiveStack<E> _reverse = new RecursiveStack<>();
+        for (E e : this) {
+            _reverse = _reverse.add(e);
+        }
+        return _reverse;
     }
 
     /**
@@ -100,7 +108,20 @@ public class RecursiveStack<E>  implements Iterable<E> {
     @Override
     public Iterator<E> iterator() {
         // TODO: think about implementing an inner class
-         return null;
+         return new StackIterator();
+    }
+    public class StackIterator implements Iterator<E> {
+        RecursiveStack<E> s = RecursiveStack.this;
+        @Override
+        public boolean hasNext() {
+            return s.next != null;
+        }
+        @Override
+        public E next () {
+            E e = s.e;
+            s = s.next;
+            return e;
+        }
     }
 
 

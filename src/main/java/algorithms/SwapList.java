@@ -49,7 +49,14 @@ interface SwapList {
             // Example, at iteration iter=3, the three lasts elements are the three biggest elements in the list, and
             //  they are in the increasing order.
 
-            // TODO
+            for (int i=0; i<list.getSize()-1; i++){
+                if (list.getFirst()>list.getSecond()) {
+                    list.swap();
+                }
+                list.pop();
+
+            }
+            list.pop();
 
         }
 
