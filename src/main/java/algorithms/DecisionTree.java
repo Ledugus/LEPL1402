@@ -51,7 +51,7 @@ public abstract class DecisionTree {
      *         the feature at featureIndex is true, the right tree is used otherwise
      */
     public static DecisionTree splitNode(int featureIndex, DecisionTree left, DecisionTree right) {
-         return null;
+         return new InnerNode(featureIndex, left, right);
     }
 
     /**
@@ -60,7 +60,40 @@ public abstract class DecisionTree {
      * @return a decision tree that always predicts label
      */
     public static DecisionTree decisionNode(boolean label) {
-         return null;
+         return new LeafNode(label);
     }
+    private static class InnerNode extends DecisionTree {
+        final int featureIndex;
+        final DecisionTree left;
+        final DecisionTree right;
+
+        private InnerNode(int featureIndex, DecisionTree left, DecisionTree right) {
+            this.featureIndex = featureIndex;
+            this.left = left;
+            this.right = right;
+        }
+
+        public boolean predict(boolean[] features) {
+            if (features[featureIndex]) {
+                return left.predict(features);
+            } else {
+                return right.predict(features);
+            }
+        }
+    }
+    private static class LeafNode extends DecisionTree {
+        final boolean value;
+
+        private LeafNode(boolean label) {
+            this.value = label;
+        }
+
+        @Override
+        public boolean predict(boolean[] features) {
+            return value;
+        }
+    }
+
+
 
 }

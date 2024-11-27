@@ -20,7 +20,15 @@ public class CleanLinkedList {
     Node last = null;
 
     public void add(int v) {
-        // TODO
+        if (first == null) {
+            first = new Node(v, null);
+            last = first;
+        } else {
+            Node n = new Node(v, null);
+            last.next = n;
+            last = n;
+        }
+
         
     }
 
@@ -37,8 +45,16 @@ public class CleanLinkedList {
      *         of elements as list but without duplicates.
      */
     public CleanLinkedList clean() {
-        // TODO
-         return null;
+        CleanLinkedList res = new CleanLinkedList();
+        Node current = first;
+        res.add(current.v);
+        while (current != null) {
+            if (current.v > res.last.v) {
+                res.add(current.v);
+            }
+            current = current.next;
+        }
+        return res;
     }
 
 

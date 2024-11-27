@@ -61,8 +61,16 @@ public class BinarySearchTree {
      * @return
      */
     public List<Integer> decreasing() {
-        // TODO
-         return null;
+        List<Integer> result = new LinkedList<>();
+        recursivePut(root, result);
+        return result;
+    }
+    public void recursivePut(Node n, List<Integer> list ) {
+        if (n != null) {
+            recursivePut(n.right, list);
+            list.add(n.key);
+            recursivePut(n.left, list);
+        }
     }
 
 

@@ -27,7 +27,7 @@ package algorithms;
  */
 import java.util.LinkedList;
 
-public class TreeHashtable {
+public class Hashtable {
 
     // Size of the internal array
     private static final int N = 10;
@@ -37,7 +37,7 @@ public class TreeHashtable {
 
     // Constructor initializes the array
     @SuppressWarnings("unchecked")
-    public TreeHashtable() {
+    public Hashtable() {
         table = new LinkedList[N];
         for (int i = 0; i < N; i++) {
             table[i] = new LinkedList<>();
@@ -119,7 +119,14 @@ public class TreeHashtable {
      * @return the value associated with they key or null if the key is not in the map
      */
     public Integer delete(String key) {
-        // TODO
+         LinkedList<Entry> bucket = table[hash(key)];
+         for (Entry entry: bucket){
+             if (entry.key.equals(key)) {
+                 Integer value = entry.value;
+                 bucket.remove(entry);
+                 return value;
+             }
+         }
          return null;
     }
 }

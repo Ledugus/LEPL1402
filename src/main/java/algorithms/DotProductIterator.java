@@ -39,8 +39,11 @@ public class DotProductIterator {
          * Constructor of the iterator.
          * @param values The array over which to iterate.
          */
+        private int i;
+        private final double[] values;
         VectorIterator(double[] values) {
-            // TODO
+            this.i = 0;
+            this.values = values;
         }
 
         /**
@@ -55,8 +58,7 @@ public class DotProductIterator {
          */
         @Override
         public boolean hasNext() {
-            // TODO
-             return false;
+            return (i< values.length);
         }
 
         /**
@@ -77,8 +79,11 @@ public class DotProductIterator {
          */
         @Override
         public Double next() {
-            // TODO
-             return null;
+            if (!this.hasNext()) throw new IllegalStateException("Il n'y a plus d'élément à itérer");
+
+            double value = values[i];
+            i++;
+            return value;
         }
     }
 
@@ -105,7 +110,16 @@ public class DotProductIterator {
      */
     public static double computeDotProduct(Iterator<Double> a,
                                            Iterator<Double> b) {
-        // TODO
-         return 0;
+        double sum = 0;
+        while (a.hasNext() || b.hasNext()) {
+            if (!a.hasNext() || !b.hasNext()) {
+                throw new IllegalArgumentException();
+
+            } else {
+                sum += a.next() * b.next();
+            }
+        }
+
+        return sum;
     }
 }
