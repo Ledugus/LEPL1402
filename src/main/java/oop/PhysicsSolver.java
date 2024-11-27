@@ -18,6 +18,8 @@ public class PhysicsSolver {
          * The constructor must initialize the slot so that it
          * contains no value.
          **/
+        boolean isSet = false;
+        double value;
         Slot() {
         }
 
@@ -39,7 +41,7 @@ public class PhysicsSolver {
          * @return <code>true</code> iff. the slot contains a value.
          **/
         public boolean hasValue() {
-             return false;
+             return isSet;
         }
 
         /**
@@ -48,8 +50,13 @@ public class PhysicsSolver {
          * @throws RuntimeException if the slot doesn't contain a value.
          **/
         public double getValue() {
-             throw new RuntimeException("slot without a value");
+            if (isSet) {
+                return value;
+            } else {
+                throw new RuntimeException("slot without a value");
+            }
         }
+
 
         /**
          * Set the value of this slot. If the slot already contains
@@ -64,7 +71,17 @@ public class PhysicsSolver {
          * value in the slot.
          **/
         public boolean setValue(double value) {
-             return false;
+            if (!isSet) {
+                this.value = value;
+                isSet = true;
+                return true;
+            }
+            if (areSameDoubles(value, this.value)) {
+                return false;
+            } else {
+                throw new RuntimeException();
+            }
+
         }
 
         /**
@@ -72,6 +89,7 @@ public class PhysicsSolver {
          * method, the slot doesn't contain a value.
          **/
         public void clearValue() {
+            isSet = false;
         }
     }
 
@@ -170,11 +188,25 @@ public class PhysicsSolver {
 
         @Override
         public boolean update() {
-			 return false;
+            if (factor1_.hasValue() &&
+                    factor2_.hasValue()) {
+                return product_.setValue(factor1_.getValue() * factor2_.getValue());
+            } else if (product_.hasValue() &&
+                    factor1_.hasValue()) {
+                return factor2_.setValue(product_.getValue() / factor1_.getValue());
+            } else if (product_.hasValue() &&
+                    factor2_.hasValue()) {
+                return factor1_.setValue(product_.getValue() / factor2_.getValue());
+            } else {
+                return false;
+            }
         }
 
         @Override
         public void clearValues() {
+            product_.clearValue();
+            factor1_.clearValue();
+            factor2_.clearValue();
         }
     }
 
@@ -231,11 +263,19 @@ public class PhysicsSolver {
 
         @Override
         public boolean update() {
-			 return false;
+            if (square_.hasValue()) {
+                return number_.setValue(Math.sqrt(square_.getValue()));
+            } else if (number_.hasValue()) {
+                return square_.setValue(Math.pow(number_.getValue(), 2));
+            } else {
+                return false;
+            }
         }
 
         @Override
         public void clearValues() {
+            square_.clearValue();
+            number_.clearValue();
         }
     }
 

@@ -1,9 +1,6 @@
 package oop;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  *
@@ -50,8 +47,10 @@ public class GlobalWarming {
     static public class IPCCDatabase {
 
         // Hint 1: You will need to store the past records in some data structure.
-        // Hint 2: You will need to store the observers in some data structure.
+        HashMap<String, Float> records;
 
+        // Hint 2: You will need to store the observers in some data structure.
+        LinkedList<RecordObserver> observers;
 
         /**
          * This method registers a new institution that is interested in being warned in real time of new temperature
@@ -59,8 +58,12 @@ public class GlobalWarming {
          *
          * @param observer The observer to be registered.
          */
+        public IPCCDatabase() {
+            this.records = new HashMap<String, Float>();
+            this.observers = new LinkedList<RecordObserver>();
+        }
         void addObserver(RecordObserver observer) {
-            // TODO
+            observers.add(observer);
         }
 
         /**
@@ -72,7 +75,21 @@ public class GlobalWarming {
          * @param temperature The measured temperature.
          */
         public void temperatureMeasured(String place, float temperature) {
-            // TODO
+            if (records.get(place) != null) {
+                float previous = records.get(place);
+                if (previous < temperature) {
+                    records.put(place, temperature);
+                    for (RecordObserver o: observers){
+                        o.signalNewRecord(place, temperature);
+                    }
+                }
+            } else {
+                records.put(place, temperature);
+                for (RecordObserver o: observers){
+                    o.signalNewRecord(place, temperature);
+                }
+            }
+
         }
     }
 }

@@ -1,60 +1,121 @@
 package oop;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Arrays;
 
 /**
  * Your task is to control a robot using a sequence of textual
  * commands. The robot can move forward, turn left, or turn right. The
  * robot is controlled through the following set of 4 basic commands:
- *
+ * <p>
  * - FORWARD
- *   => Move the robot forward
- *
+ * => Move the robot forward
+ * <p>
  * - LEFT
- *   => Turn the robot to the left
- *
+ * => Turn the robot to the left
+ * <p>
  * - RIGHT
- *   => Turn the robot to the right
- *
+ * => Turn the robot to the right
+ * <p>
  * - REPEAT N
- *   ...
- *   END REPEAT
- *   => Repeat "N" times the commands "..."
- *
+ * ...
+ * END REPEAT
+ * => Repeat "N" times the commands "..."
+ * <p>
  * For instance, here is a sample sequence of textual commands:
- *
- *  FORWARD
- *  REPEAT 3
- *  FORWARD
- *  RIGHT
- *  END REPEAT
- *  FORWARD
- *  FORWARD
- *
+ * <p>
+ * FORWARD
+ * REPEAT 3
+ * FORWARD
+ * RIGHT
+ * END REPEAT
+ * FORWARD
+ * FORWARD
+ * <p>
  * If applied to a robot that turns at right angles, this sample
  * sequence would generate the following pattern, where "x" denotes
  * the starting point of the robot, and "^" is its final position:
- *
- *      ^
- *      |
- *      |
+ * <p>
+ * ^
+ * |
+ * |
  * x---->---->
- *      |    |
- *      |    |
- *      <----<
- *
+ * |    |
+ * |    |
+ * <----<
+ * <p>
  * Pay attention to the fact that the "REPEAT" commands can be nested
  * (i.e. a "REPEAT" command may recursively contain other "REPEAT"
  * commands).
- *
+ * <p>
  * Using the "Factory" design pattern, you must convert an array of
  * strings containing commands into an "Action" object that can be
  * used to control one instance of the "Robot" interface.
  **/
 
 public class RobotActionFactory {
+
+    /**
+     * The factory method you have to implement.
+     * <p>
+     * NB 1: In order to parse an integer from some string "s", you
+     * can use the standard function "Integer.parseInt(s)".
+     * <p>
+     * NB 2: If the array of commands cannot be parsed (e.g. because
+     * of an unknown action, or because of a "REPEAT" command without
+     * an "END REPEAT"), you must throw an exception of class
+     * "IllegalArgumentException".
+     *
+     * @param commands The array of commands to drive the robot.
+     * @return An "Action" object that will move the robot
+     * according to the commands.
+     **/
+    public Action parse(String[] commands) {
+        SequenceOfActions sequence = new SequenceOfActions();
+        int i = 0;
+        while (i < commands.length) {
+
+            if (commands[i].equals("FORWARD")) {
+                sequence.add(new MoveForwardAction());
+                i++;
+            } else if (commands[i].equals("RIGHT")) {
+                sequence.add(new TurnRightAction());
+                i++;
+            } else if (commands[i].equals("LEFT")) {
+                sequence.add(new TurnLeftAction());
+                i++;
+            } else if (commands[i].startsWith("REPEAT")) {
+                String[] command = commands[i].split(" ");
+                int times = Integer.parseInt(command[1]);
+
+                int depth = 1;
+                int j = i + 1;
+
+                while (depth > 0 &&
+                        j < commands.length) {
+                    if (commands[j].startsWith("REPEAT")) {
+                        depth ++;
+                    } else if (commands[j].equals("END REPEAT")) {
+                        depth --;
+                    }
+                    j++;
+                }
+
+                if (depth == 0) {
+                    Action action = parse(Arrays.copyOfRange(commands, i + 1, j - 1));
+                    sequence.add(new RepeatAction(times, action));
+                    i = j;
+                } else {
+                    throw new IllegalArgumentException("Missing END REPEAT");
+                }
+            } else {
+                throw new IllegalArgumentException("Unknown command: " + commands[i]);
+            }
+        }
+        return sequence;
+    }
+
 
     /**
      * Interface defining an abstract robot to be controlled.
@@ -88,11 +149,11 @@ public class RobotActionFactory {
 
         /**
          * Apply this action to the given robot.
+         *
          * @param robot The robot.
          **/
         void apply(Robot robot);
     }
-
 
     /**
      * This type of "Action" moves the robot forward.
@@ -100,10 +161,9 @@ public class RobotActionFactory {
     private static class MoveForwardAction implements Action {
         @Override
         public void apply(Robot robot) {
-            // TODO Implement the body of this method
+            robot.moveForward();
         }
     }
-
 
     /**
      * This type of "Action" turns the robot to the left.
@@ -111,10 +171,9 @@ public class RobotActionFactory {
     private static class TurnLeftAction implements Action {
         @Override
         public void apply(Robot robot) {
-            // TODO Implement the body of this method
+            robot.turnLeft();
         }
     }
-
 
     /**
      * This type of "Action" turns the robot to the right.
@@ -122,10 +181,9 @@ public class RobotActionFactory {
     private static class TurnRightAction implements Action {
         @Override
         public void apply(Robot robot) {
-            // TODO Implement the body of this method
+            robot.turnRight();
         }
     }
-
 
     /**
      * This type of "Action" represents a sequence of actions to be
@@ -136,6 +194,7 @@ public class RobotActionFactory {
 
         /**
          * Append a new action to the end of the sequence of actions.
+         *
          * @param action The action to be added.
          **/
         public void add(Action action) {
@@ -144,10 +203,11 @@ public class RobotActionFactory {
 
         @Override
         public void apply(Robot robot) {
-            // TODO Implement the body of this method
+            for (Action a : actions) {
+                a.apply(robot);
+            }
         }
     }
-
 
     /**
      * This type of "Action" executes another action, for a given
@@ -159,7 +219,8 @@ public class RobotActionFactory {
 
         /**
          * Constructor for a repetition of one action.
-         * @param times The number of times the action must be executed.
+         *
+         * @param times  The number of times the action must be executed.
          * @param action The action to be repeated.
          **/
         RepeatAction(int times,
@@ -170,33 +231,11 @@ public class RobotActionFactory {
 
         @Override
         public void apply(Robot robot) {
-            // TODO Implement the body of this method
+            for (int i = 0; i < times; i++) {
+                action.apply(robot);
+            }
         }
     }
-
-    /**
-     * The factory method you have to implement.
-     *
-     * NB 1: In order to parse an integer from some string "s", you
-     * can use the standard function "Integer.parseInt(s)".
-     *
-     * NB 2: If the array of commands cannot be parsed (e.g. because
-     * of an unknown action, or because of a "REPEAT" command without
-     * an "END REPEAT"), you must throw an exception of class
-     * "IllegalArgumentException".
-     *
-     * @param commands The array of commands to drive the robot.
-     * @return An "Action" object that will move the robot
-     * according to the commands.
-     **/
-    public Action parse(String commands[]) {
-        SequenceOfActions sequence = new SequenceOfActions();
-
-        // TODO Implement the body of this method by filling the "sequence" object
-
-        return sequence;
-    }
-
 
 
 }
