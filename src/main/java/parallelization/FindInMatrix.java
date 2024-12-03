@@ -2,7 +2,8 @@ package parallelization;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
+import java.util.Stack;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -56,11 +57,47 @@ public class FindInMatrix {
      * Catch exceptions and ignore them.
      */
 
-    public static Result findValue(int[][] matrix, int value, int poolSize) {
-        // TODO
-        // Hint:
-        // One row of the matrix -> One future.
 
-         return null;
+
+    public static Result findValue(int[][] matrix, int value, int poolSize) {
+
+        class RowSearchCallable implements Callable<Result> {
+            int[] row;
+            int value;
+            int rowIndex;
+
+            RowSearchCallable(int rowIndex, int[] row, int value) {
+                this.row = row;
+                this.value = value;
+                this.rowIndex = rowIndex;
+            }
+            public Result call() {
+                List<Integer> columns = new ArrayList<>();
+                for (int i=0; i<row.length; i++) {
+                    if (row[i] == value) {
+                        columns.add(i);
+                    }
+                }
+                return new Result(rowIndex, columns);
+            }
+
+        }
+        ExecutorService executor = Executors.newFixedThreadPool(poolSize);
+        Future<Result>[] futures = new Future[matrix.length];
+        for (int i = 0; i<matrix.length; i++) {
+            futures[i] = executor.submit(new RowSearchCallable(i, matrix[i], value));
+        }
+        Result current_max = null;
+        try {
+            current_max = futures[0].get();
+            for (Future<Result> i : futures) {
+                Result other = i.get();
+                if (other.columns.size() > current_max.columns.size()) {
+                    current_max = other;
+                }
+
+            }
+        } catch (Exception e){}
+        return current_max;
     }
 }

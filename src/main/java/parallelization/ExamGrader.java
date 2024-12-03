@@ -1,5 +1,6 @@
 package parallelization;
 
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -49,7 +50,12 @@ public class ExamGrader {
      *  the list of questions is not empty.
      */
     public static int calculateExamGrade(ExamQuestion questions, RoundingFunction roundingFunction) {
-         return 0;
+        int sum = 0;
+        while (questions != null) {
+            sum += roundingFunction.roundGrade(questions.getPointsObtained());
+            questions = questions.getNextQuestion();
+        }
+        return sum;
     }
 
 
@@ -66,7 +72,20 @@ public class ExamGrader {
      * You MUST use threads (or a threadpool).
      * Catch (and ignore) all exceptions.
      */
+
     public static int[] gradeExams(ExamQuestion exam1, ExamQuestion exam2, RoundingFunction roundingFunction) {
-         return null;
+        int[] result = new int[2];
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+        Future<Integer> f1 = executor.submit(() -> calculateExamGrade(exam1, roundingFunction));
+        Future<Integer> f2 = executor.submit(() -> calculateExamGrade(exam2, roundingFunction));
+        try {
+            result[0]= f1.get();}
+        catch (Exception e) {}
+        try {
+            result[1] = f2.get();
+        } catch (Exception e) {}
+        executor.shutdown();
+        return result;
+
     }
 }

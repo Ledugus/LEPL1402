@@ -55,8 +55,15 @@ public class CountPrimeNumbers {
      * @return true if the number is prime, false otherwise.
      */
     public static boolean isPrime(int number) {
-        // TODO
-         return true;
+        if (number < 2) {
+            return false;
+        }
+        for (int i =2; i < Math.round(Math.sqrt(number))+1; i++) {
+            if (number % i == 0) {
+                return false;
+            }
+        }
+        return true;
     }
 
 
@@ -70,8 +77,13 @@ public class CountPrimeNumbers {
      */
     public static int countPrimesInInterval(int start,
                                             int end) {
-        // TODO
-         return 0;
+        int count = 0;
+        for (int i = start; i<end; i++) {
+            if (isPrime(i)) {
+                count += 1;
+            }
+        }
+        return count;
     }
 
 
@@ -89,12 +101,13 @@ public class CountPrimeNumbers {
          **/
         CountPrimesCallable(int start,
                             int end) {
-            // TODO
+            this.start = start;
+            this.end = end;
         }
 
         public Integer call() {
-            // TODO
-             return 0;
+
+            return countPrimesInInterval(start, end);
         }
     }
 
@@ -109,13 +122,18 @@ public class CountPrimeNumbers {
          * @param start Start of the interval (inclusive).
          * @param end End of the interval (exclusive).
          **/
+        private final int start;
+        private final int end;
+        private int value;
         CountPrimesRunnable(int start,
                             int end) {
-            // TODO
+            this.start = start;
+            this.end = end;
+
         }
 
         public void run() {
-            // TODO
+            value = countPrimesInInterval(start, end);
         }
 
         /**
@@ -123,8 +141,8 @@ public class CountPrimeNumbers {
          * by the call to "run()".
          **/
         public int getResult() {
-            // TODO
-             return 0;
+
+            return value;
         }
     }
 
@@ -142,14 +160,19 @@ public class CountPrimeNumbers {
          * @param start Start of the interval (inclusive).
          * @param end End of the interval (exclusive).
          **/
+        private final SharedCounter target;
+        private final int start;
+        private final int end;
         CountPrimesSharedCounter(SharedCounter target,
                                  int start,
                                  int end) {
-            // TODO
+            this.start = start;
+            this.end = end;
+            this.target = target;
         }
 
         public void run() {
-            // TODO
+            target.add(countPrimesInInterval(start, end));
         }
     }
 
@@ -184,8 +207,21 @@ public class CountPrimeNumbers {
     public static int countPrimesWithCallable(ExecutorService threadPool,
                                               int end,
                                               int countIntervals) throws InterruptedException, ExecutionException {
-        // TODO
-         return 0;
+        if (countIntervals <= 0) {
+            throw new IllegalArgumentException();
+        }
+        int prec = 1;
+        Future[] list = new Future[countIntervals];
+        for (int i= 1; i<countIntervals+1; i++) {
+            Future<Integer> future = threadPool.submit(new CountPrimesCallable(prec, i*end/countIntervals));
+            list[i-1] = future;
+            prec = i*end/countIntervals;
+        }
+        Integer sum = 0;
+        for (Future<Integer> i: list) {
+            sum += i.get();
+        }
+        return sum;
     }
 
 
@@ -196,8 +232,28 @@ public class CountPrimeNumbers {
     public static int countPrimesWithRunnable(ExecutorService threadPool,
                                               int end,
                                               int countIntervals) throws InterruptedException, ExecutionException {
-        // TODO
-         return 0;
+
+        if (countIntervals <= 0) {
+            throw new IllegalArgumentException();
+        }
+        int prec = 1;
+        CountPrimesRunnable[] runnables = new CountPrimesRunnable[countIntervals];
+        Future[] futures = new Future[countIntervals];
+
+        SharedCounter target = new SharedCounter();
+        for (int i= 1; i<countIntervals+1; i++) {
+            runnables[i-1] = new CountPrimesRunnable(prec, i*end/countIntervals);
+            futures[i-1] = threadPool.submit(runnables[i-1]);
+            prec = i*end/countIntervals;
+        }
+        for (Future i : futures) {
+            i.get();
+        }
+        int sum = 0;
+        for (CountPrimesRunnable i : runnables) {
+            sum += i.getResult();
+        }
+        return sum;
     }
 
 
@@ -211,6 +267,20 @@ public class CountPrimeNumbers {
                                                     ExecutorService threadPool,
                                                     int end,
                                                     int countIntervals) throws InterruptedException, ExecutionException {
-        // TODO
+        if (countIntervals <= 0) {
+            throw new IllegalArgumentException();
+        }
+        target.set(0);
+        int prec = 1;
+        Future[] futures = new Future[countIntervals];
+        for (int i= 1; i<countIntervals+1; i++) {
+            Future future = threadPool.submit(new CountPrimesSharedCounter(target, prec, i*end/countIntervals));
+            futures[i-1] = future;
+            prec = i*end/countIntervals;
+        }
+
+        for (Future<Integer> i: futures) {
+            i.get();
+        }
     }
 }
