@@ -1,5 +1,6 @@
 package fp;
 
+import javax.print.attribute.standard.MediaName;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -10,24 +11,23 @@ public class LambdaExpressions {
      * Return a binary operator that computes the sum of two Integer objects.
      */
     public static Object sumOfIntegers() {
-        // TODO
-         return null;
+
+        return (BinaryOperator<Integer>) (a, b) -> a + b;
     }
 
     /**
      * Return a predicate that tests whether a String is empty.
      */
     public static Object isEmptyString() {
-        // TODO
-         return null;
+        return (Predicate<String>) s -> s.isEmpty();
     }
 
     /**
      * Return a predicate that tests whether an Integer is an odd number.
      */
     public static Object isOddNumber() {
-        // TODO
-         return null;
+
+        return (Predicate<Integer>) n -> n % 2 == 1;
     }
 
     /**
@@ -35,15 +35,24 @@ public class LambdaExpressions {
      * If the list is empty, an IllegalArgumentException must be thrown.
      */
     public static Object computeMeanOfListOfDoubles() {
-        // TODO
-         return null;
+
+        return (Function<List<Double>, Double>) list -> {
+            if (list.isEmpty()) {
+                throw new IllegalArgumentException();
+            }
+            double sum = 0;
+            for (double i : list) {
+                sum += i;
+            }
+            return sum / list.size();
+        };
     }
 
     /**
      * Remove the even numbers from a list of Integer objects.
      */
     public static void removeEvenNumbers(List<Integer> lst) {
-        // TODO
+        lst.removeIf(x -> x % 2 == 0);
     }
 
     /**
@@ -52,24 +61,42 @@ public class LambdaExpressions {
      * If the number is negative, an IllegalArgumentException must be thrown.
      */
     public static Object computeFactorial() {
-        // TODO
-         return null;
+
+        return (UnaryOperator<Integer>) x -> {
+            if (x < 0) {
+                throw new IllegalArgumentException();
+            }
+            int result = 1;
+            for (int i=2; i<=x; i++) {
+                result *= i;
+            }
+            return result;
+        };
     }
 
     /**
      * Return a function that converts a list of String objects to lower case.
      */
     public static Object listOfStringsToLowerCase() {
-        // TODO
-         return null;
+
+        return (UnaryOperator<List<String>>) lst -> {
+            ArrayList<String> b = new ArrayList<>();
+
+            for (String s : lst) {
+                b.add(s.toLowerCase());
+            }
+            return b;
+        };
     }
 
     /**
      * Return a function that concatenates two String objects.
      */
     public static Object concatenateStrings() {
-        // TODO
-         return null;
+
+        return (BinaryOperator<String>) (a, b) -> {
+            return a + b;
+        };
     }
 
     public static class MinMaxResult {
@@ -96,8 +123,19 @@ public class LambdaExpressions {
      * The content of the Optional must be present if and only if the list is non-empty.
      */
     public static Function<List<Integer>, Optional<MinMaxResult>> computeMinMax() {
-        // TODO
-         return null;
+        return lst -> {
+            if (lst.isEmpty()) {
+                return Optional.empty();
+            } else {
+                int minValue = lst.get(0);
+                int maxValue = lst.get(0);
+                for (Integer i : lst) {
+                    minValue = Math.min(minValue, i);
+                    maxValue = Math.max(maxValue, i);
+                }
+                return Optional.of(new MinMaxResult(minValue, maxValue));
+            }
+        };
     }
 
     /**
@@ -105,7 +143,15 @@ public class LambdaExpressions {
      * the number of occurrences of the character inside the string.
      */
     public static Object countInstancesOfLetter() {
-        // TODO
-         return null;
+
+        return (BiFunction<String, Character, Integer>) (s, c) -> {
+            int count = 0;
+            for (int i=0; i<s.length(); i++) {
+                if (c == s.charAt(i)) {
+                    count++;
+                }
+            }
+            return count;
+        };
     }
 }

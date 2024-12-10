@@ -78,10 +78,21 @@ public class BrickCounter {
      * @return an array with the number of bricks per box
      */
     public static int[] countBricks(Brick[] bricks, int n, Function<Brick, Integer> sorter) {
-        // TODO
-         return null;
+        int[] nb_bricks_in_box = new int[n];
+        for (Brick brick : bricks) {
+            nb_bricks_in_box[sorter.apply(brick)] += 1;
+        }
+        return nb_bricks_in_box;
     }
 
+
+    public static int[] countBricks(Brick[] bricks, int begin, int end, int n, Function<Brick, Integer> sorter) {
+        int[] nb_bricks_in_box = new int[n];
+        for (int i=begin; i<end ; i++) {
+            nb_bricks_in_box[sorter.apply(bricks[i])] += 1;
+        }
+        return nb_bricks_in_box;
+    }
 
     /**
      * Écrivez la méthode "countBricksTwoThreads". Cette méthode fait
@@ -126,7 +137,19 @@ public class BrickCounter {
      */
     public static int[] countBricksTwoThreads(Brick[] bricks, int n, Function<Brick, Integer> sorter,
                                               ExecutorService executor) {
-        // TODO
-         return null;
+
+        Future<int[]> f1 = executor.submit(() -> countBricks(bricks, 0, bricks.length/2, n, sorter));
+        Future<int[]> f2 = executor.submit(() -> countBricks(bricks,  bricks.length/2, bricks.length, n, sorter));
+        try {
+            final int[] a1 = f1.get();
+            final int[] a2 = f2.get();
+            for (int i=0; i<n;i++) {
+                a1[i] += a2[i];
+            }
+            return a1;
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

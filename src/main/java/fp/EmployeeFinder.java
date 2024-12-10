@@ -1,10 +1,7 @@
 package fp;
 
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 import java.util.function.Function;
 
 public class EmployeeFinder {
@@ -12,6 +9,70 @@ public class EmployeeFinder {
     // but do not modify the signature of the existing
     // methods or the types of existing fields.
 
+
+    /**
+     * Write a method that returns the "best" employee from a list of employees.
+     * To decide who is the best employee, the method should use the "scoreFunction".
+     * The score function calculates a score for an employee. The SMALLER the score
+     * the better the employee.
+     * If there are multiple "best" employees (i.e., employees with the same score),
+     * the method should return the first one in the list.
+     * <p>
+     * You can assume that the list "employees" is never empty.
+     * <p>
+     * See the unit test for an example.
+     */
+    public static Employee findBestEmployee(ArrayList<Employee> employees, Function<Employee, Float> scoreFunction) {
+        Employee best_employee = employees.get(0);
+        float current_score = scoreFunction.apply(best_employee);
+        for (int i = 1; i < employees.size(); i++) {
+            if (scoreFunction.apply(employees.get(i)) < current_score) {
+                best_employee = employees.get(i);
+                current_score = scoreFunction.apply(best_employee);
+            }
+        }
+
+        return best_employee;
+    }
+
+    /**
+     * Write a method that returns the "best" employee in a company. The best
+     * employee is the employee (in all departments of the company) with the smallest
+     * score calculated by "scoreFunction".
+     * <p>
+     * If there are multiple "best" employees in a department, the method should
+     * return the first one in the employee list of the department. If both departments
+     * have best employees with the same score, the employee from department "A" should
+     * be preferred.
+     * <p>
+     * You can assume that the employee lists of the departments are not empty.
+     * <p>
+     * See the unit test for an example.
+     * <p>
+     * WARNING:
+     * - You MUST use two threads (or a threadpool) to search the two departments
+     * in parallel.
+     * You will get 0 points for this question if you don't use threads (or a
+     * threadpool) even if your code returns the correct result on inginious!
+     * - If you get a timeout on inginious, it probably means that your code is missing
+     * something.
+     * - You MUST catch all exceptions. You can return null if there is a problem.
+     */
+    public static Employee findBestEmployee(Company company, Function<Employee, Float> scoreFunction) {
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+
+        Future<Employee> f1 = executor.submit(() -> findBestEmployee(company.departmentA, scoreFunction));
+        Future<Employee> f2 = executor.submit(() -> findBestEmployee(company.departmentB, scoreFunction));
+
+        try {
+            Employee bA = f1.get();
+            Employee bB = f2.get();
+            return (scoreFunction.apply(bB) < scoreFunction.apply(bA)) ? bB : bA;
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     public static class Employee {
         public final int id;
@@ -36,50 +97,5 @@ public class EmployeeFinder {
             this.departmentA = departmentA;
             this.departmentB = departmentB;
         }
-    }
-
-    /**
-     * Write a method that returns the "best" employee from a list of employees.
-     * To decide who is the best employee, the method should use the "scoreFunction".
-     * The score function calculates a score for an employee. The SMALLER the score
-     * the better the employee.
-     * If there are multiple "best" employees (i.e., employees with the same score),
-     * the method should return the first one in the list.
-     *
-     * You can assume that the list "employees" is never empty.
-     *
-     * See the unit test for an example.
-     */
-    public static Employee findBestEmployee(ArrayList<Employee> employees, Function<Employee, Float> scoreFunction) {
-        // TODO
-         return null;
-    }
-
-    /**
-     * Write a method that returns the "best" employee in a company. The best
-     * employee is the employee (in all departments of the company) with the smallest
-     * score calculated by "scoreFunction".
-     *
-     * If there are multiple "best" employees in a department, the method should
-     * return the first one in the employee list of the department. If both departments
-     * have best employees with the same score, the employee from department "A" should
-     * be preferred.
-     *
-     * You can assume that the employee lists of the departments are not empty.
-     *
-     * See the unit test for an example.
-     *
-     * WARNING:
-     *   - You MUST use two threads (or a threadpool) to search the two departments
-     *     in parallel.
-     *     You will get 0 points for this question if you don't use threads (or a
-     *     threadpool) even if your code returns the correct result on inginious!
-     *   - If you get a timeout on inginious, it probably means that your code is missing
-     *     something.
-     *   - You MUST catch all exceptions. You can return null if there is a problem.
-     */
-    public static Employee findBestEmployee(Company company, Function<Employee, Float> scoreFunction) {
-        // TODO
-         return null;
     }
 }
