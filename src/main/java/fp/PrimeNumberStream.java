@@ -1,5 +1,6 @@
 package fp;
 
+import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
@@ -20,8 +21,15 @@ public class PrimeNumberStream {
      * @return true if the number is prime, false otherwise.
      */
     public static boolean isPrime(int number) {
-        // TODO
-         return true;
+        if (number < 2) {
+            return false;
+        }
+        for (int i =2; i < Math.round(Math.sqrt(number))+1; i++) {
+            if (number % i == 0) {
+                return false;
+            }
+        }
+        return true;
     }
 
 
@@ -31,9 +39,13 @@ public class PrimeNumberStream {
      * @return The infinite stream of integers: "from", "from + 1", "from + 2",...
      */
     public static Stream<Integer> streamFrom(int from) {
-        // TODO:
-        // Hint: Consider using Stream.iterate() method
-         return null;
+
+        return Stream.iterate(from, new UnaryOperator<Integer>() {
+            @Override
+            public Integer apply(Integer integer) {
+                return integer + 1;
+            }
+        });
     }
 
 
@@ -43,9 +55,8 @@ public class PrimeNumberStream {
      * @return The infinite stream of prime numbers.
      */
     public static Stream<Integer> primeStreamFrom(int from) {
-        // TODO
-        // Hint: use filter
-         return null;
+
+        return streamFrom(from).filter(PrimeNumberStream::isPrime);
     }
 
     /**
@@ -62,7 +73,14 @@ public class PrimeNumberStream {
      * @return The infinite stream of prime gaps.
      */
     public static Stream<Integer> primeGapStreamFrom(int from) {
-        // TODO
-         return null;
+        return streamFrom(from).filter(PrimeNumberStream::isPrime).map(new UnaryOperator<Integer>() {
+            int previous;
+            @Override
+            public Integer apply(Integer n) {
+                int diff = n-previous;
+                previous = n;
+                return diff;
+            }
+        }).skip(1);
     }
 }

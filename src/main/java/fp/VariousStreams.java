@@ -1,6 +1,9 @@
 package fp;
 
+import java.util.Comparator;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -14,8 +17,8 @@ public class VariousStreams {
      */
     static public long countStringsWithFirstLetter(Stream<String> stream,
                                                    char firstLetter) {
-        // TODO
-         return -1;
+
+        return stream.filter(x -> x.charAt(0) == firstLetter).count();
     }
 
 
@@ -25,8 +28,8 @@ public class VariousStreams {
      */
     static public Stream<String> changeCase(Stream<String> stream,
                                             boolean uppercase) {
-        // TODO
-         return Stream.empty();
+        Function<String, String> f = uppercase ? (x->x.toUpperCase()) : (x-> x.toLowerCase());
+        return stream.map(f);
     }
 
 
@@ -37,8 +40,8 @@ public class VariousStreams {
      */
     static public int getSumOfEvenOrOddNumbers(Stream<Integer> stream,
                                                boolean isEven) {
-        // TODO
-         return 0;
+        Predicate<Integer> filter = isEven ? (x -> (x % 2 == 0)): (x -> (x%2 ==1));
+        return stream.filter(filter).reduce(0, (a, b) -> a+b);
     }
 
 
@@ -49,8 +52,8 @@ public class VariousStreams {
      * that is especially well suited!
      */
     static public Stream<Integer> removeDuplicates(Stream<Integer> stream) {
-        // TODO
-         return Stream.empty();
+
+        return stream.distinct();
     }
 
 
@@ -61,8 +64,18 @@ public class VariousStreams {
      */
     static public Stream<String> sortAscendingOrDescending(Stream<String> stream,
                                                            boolean isAscending) {
-        // TODO
-         return Stream.empty();
+        Comparator<String> c = isAscending ? new Comparator<String>() {
+            @Override
+            public int compare(String string, String t1) {
+                return string.compareTo(t1);
+            }
+        }: new Comparator<String>() {
+                @Override
+                public int compare(String string, String t1) {
+                    return t1.compareTo(string);
+                }
+        };
+        return stream.sorted(c);
     }
 
 
@@ -75,8 +88,8 @@ public class VariousStreams {
      * class.
      */
     static public double computeAverage(Stream<Integer> stream) {
-        // TODO
-         return -1.0;
+
+        return stream.mapToDouble(x -> (double) x).average().orElse(0.0);
     }
 
 
@@ -112,8 +125,12 @@ public class VariousStreams {
      * Hint: Use "map()" to create "MinMaxValue", then use "reduce()".
      */
     static public Optional<MinMaxValue> computeMinMaxValue(Stream<Integer> stream) {
-        // TODO
-         return Optional.empty();
+
+        return stream.map(x -> Optional.of(new MinMaxValue(x, x))).reduce(Optional.empty(),
+                (a, b) -> a.isPresent() ? Optional.of(new MinMaxValue(
+                        Math.min(a.get().getMinValue(), b.get().getMinValue()),
+                        Math.max(a.get().getMaxValue(), b.get().getMaxValue())
+                )): b);
     }
 
 
@@ -124,7 +141,18 @@ public class VariousStreams {
      * Hint: Use the "generator()" method of "Stream<T>" with a supplier.
      */
     public static Stream<Integer> generateFibonacci() {
-        // TODO
-         return Stream.empty();
+         return Stream.generate(new Supplier<Integer>() {
+            private int previous1 = 1;
+            private int previous2 = 1;
+            @Override
+            public Integer get() {
+                int to_return = previous1 + previous2;
+                int temp = previous1;
+                previous1 = previous2 + previous1;
+                previous2 = temp;
+                return to_return;
+            }
+        });
+
     }
 }
