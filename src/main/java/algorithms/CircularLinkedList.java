@@ -54,12 +54,26 @@ public class CircularLinkedList {
     public Optional<Node> getLast() {
         return this.last;
     }
-    
+
     public void enqueue(int value) {
-        
+        Node node = new Node(value);
+        this.size += 1;
+        if (this.first.isPresent()) {
+            Node f = this.first.get();
+            Node l = this.last.get();
+            node.setNext(f);
+            l.setNext(node);
+
+            this.last = Optional.of(node);
+        } else {
+            this.first = Optional.of(node);
+            this.last = Optional.of(node);
+        }
     }
-    
+
     public int remove(int index) {
-         return -1;
+
+        return -1;
     }
+
 }

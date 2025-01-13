@@ -283,7 +283,8 @@ public class StudentStream {
      **/
     public static Student findFirst(Stream<Student> students,
                                     StudentConditions conditions) {
-        Optional<Student> o = students.filter(conditions::isMatch).findFirst();
+        Predicate<Student> p = s -> conditions.isMatch(s);
+        Optional<Student> o = students.filter(p).findFirst();
         return o.orElse(null);
     }
 
